@@ -1,5 +1,6 @@
 package main;
 
+import utilz.Constants;
 import utilz.LoadImages;
 import main.ParseJSON.*;
 
@@ -18,10 +19,11 @@ public class LevelManager {
 
     public LevelManager(Game game) {
         this.game = game;
-        array = ParseJSON.readFromJson();
+        //array = ParseJSON.readFromJson();
         //levelSprite = LoadImages.GetSpriteImage(LoadImages.TILESET_FILE);
         importOutsideSprites();
         levelOne = new Level(ParseJSON.readFromJson());
+        //array = levelOne.getLevelData();
     }
 
     private void importOutsideSprites() {
@@ -41,8 +43,8 @@ public class LevelManager {
         for (int i = 0; i < 25; i++) {
             for (int j = 0; j < 35; j++) {
                 g.drawImage(img2, j * 32, i * 32, null);
-                g.drawImage(levelSprite[array[i][j] - 1], j * 32, i * 32, null);
-                //index++;
+                index = levelOne.getSpriteIndex(i, j) - 1;
+                g.drawImage(levelSprite[index], j * Constants.mapInfo.tileSize, i * Constants.mapInfo.tileSize, null);
             }
         }
     }
