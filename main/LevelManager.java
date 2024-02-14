@@ -13,7 +13,7 @@ public class LevelManager {
     private BufferedImage[] levelSprite;
     BufferedImage img2 = LoadImages.GetSpriteImage(LoadImages.BACKGROUND_IMAGE);
     private BufferedImage backgroundImage;
-    private static int[] array;
+    private static int[][] array;
     private Level levelOne;
 
     public LevelManager(Game game) {
@@ -41,8 +41,8 @@ public class LevelManager {
         for (int i = 0; i < 25; i++) {
             for (int j = 0; j < 35; j++) {
                 g.drawImage(img2, j * 32, i * 32, null);
-                g.drawImage(levelSprite[array[index] - 1], j * 32, i * 32, null);
-                index++;
+                g.drawImage(levelSprite[array[i][j] - 1], j * 32, i * 32, null);
+                //index++;
             }
         }
     }

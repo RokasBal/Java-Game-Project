@@ -1,16 +1,16 @@
 package main;
 
 public class Level {
-    private int[] levelData;
-    public Level(int[] levelData) {
+    private int[][] levelData;
+    public Level(int[][] levelData) {
         this.levelData = levelData;
     }
 
     public int getSpriteIndex(int x, int y) {
-        return levelData[y];
+        return levelData[x][y];
     }
 
-    public int[] getLevelData() {
+    public int[][] getLevelData() {
         return levelData;
     }
 }

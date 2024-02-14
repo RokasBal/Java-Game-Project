@@ -29,4 +29,9 @@ public class Constants {
             };
         }
     }
+
+    public static class mapInfo {
+        public static final int mapWidth = 35;
+        public static final int mapHeight = 25;
+    }
 }
