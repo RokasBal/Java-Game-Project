@@ -1,5 +1,7 @@
 package entities;
 
+import main.Game;
+
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
@@ -17,9 +19,9 @@ public abstract class Entity {
         //initializeHitbox();
     }
 
-    protected void drawHitbox(Graphics g) {
+    protected void drawHitbox(Graphics g, int levelOffsetX, int levelOffsetY) {
         g.setColor(Color.red);
-        //g.drawRect((int) hitbox.x, (int) hitbox.y, (int) hitbox.width, (int) hitbox.height);
+        g.drawRect((int) hitbox.x - levelOffsetX, (int) hitbox.y - levelOffsetY, (int) hitbox.width, (int) hitbox.height);
     }
 
     protected void initializeHitbox(float x, float y, float hitboxWidth, float hitboxHeight) {

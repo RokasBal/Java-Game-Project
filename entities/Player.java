@@ -19,13 +19,22 @@ import static utilz.Constants.physicsControl.playerSpeed;
 public class Player extends Entity{
 
     private BufferedImage[][] animations;
-    private int animationTick, animationIndex, animationSpeed = 15;
+    private int animationTick, animationIndex, animationSpeed = 13;
     private int playerAction = IDLE, playerDirection = -1;
     private boolean left, right, up, down, jump, moving = false;
     private boolean inAir = false;
     public static int startX = Constants.PlayerInfo.START_X, startY = Constants.PlayerInfo.START_Y;
     private float airSpeed = 0f;
     private int animationsArraySizeX = 11, animationsArraySizeY = 8;
+//    private int levelOffsetX, levelOffsetY;
+//    private int leftBorder = (int)(0.2 * Constants.mapInfo.visibleWidth);
+//    private int rightBorder = (int)(0.8 * Constants.mapInfo.visibleWidth);
+//    private int upperBorder = (int)(0.2 * Constants.mapInfo.visibleHeight);
+//    private int lowerBorder = (int)(0.8 * Constants.mapInfo.visibleHeight);
+//    private int maxTilesOffsetX = Constants.mapInfo.mapWidth - Constants.mapInfo.visibleWidth;
+//    private int maxTilesOffsetY = Constants.mapInfo.mapHeight - Constants.mapInfo.visibleHeight;
+//    private int maxOfsetX = maxTilesOffsetX * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale);
+//    private int maxOfsetY = maxTilesOffsetY * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale);
     private int[][] levelData;
     public Player(float x, float y, int width, int height) {
         super(x, y, width, height);
@@ -35,16 +44,14 @@ public class Player extends Entity{
 
     public void update() {
         updatePosition();
-        //updateHitbox();
         updateAnimationTick();
         setAnimation();
     }
 
-    public void render(Graphics g) {
-        g.drawImage(animations[animationIndex][playerAction], (int)(hitbox.x - 45 * Constants.mapInfo.gameScale), (int)(hitbox.y - 50 * Constants.mapInfo.gameScale), (int)(Constants.PlayerInfo.SPRITE_WIDTH * Constants.mapInfo.gameScale), (int)(Constants.PlayerInfo.SPRITE_HEIGHT * Constants.mapInfo.gameScale), null);
-        drawHitbox(g);
+    public void render(Graphics g, int levelOffsetX, int levelOffsetY) {
+        g.drawImage(animations[animationIndex][playerAction], (int)(hitbox.x - 45 * Constants.mapInfo.gameScale) - levelOffsetX, (int)(hitbox.y - 50 * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.PlayerInfo.SPRITE_WIDTH * Constants.mapInfo.gameScale), (int)(Constants.PlayerInfo.SPRITE_HEIGHT * Constants.mapInfo.gameScale), null);
+        drawHitbox(g, levelOffsetX, levelOffsetY);
     }
-
     private void loadAnimations() {
         InputStream is = LoadImages.class.getResourceAsStream("/res/Knight_Sprite.png");
         BufferedImage img = null;

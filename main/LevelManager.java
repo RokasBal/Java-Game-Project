@@ -36,15 +36,20 @@ public class LevelManager {
         }
     }
 
-    public void draw(Graphics g) {
+    public void draw(Graphics g, int levelOffsetX, int levelOffsetY) {
         int l1index = 0, l2index = 0;
+        for(int i = 0; i < Constants.mapInfo.mapHeight * 4; i++) {
+            for (int j = 0; j < Constants.mapInfo.mapWidth * 4; j++) {
+                g.drawImage(levelSprite[32], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
+            }
+        }
         for (int i = 0; i < Constants.mapInfo.mapHeight; i++) {
             for (int j = 0; j < Constants.mapInfo.mapWidth; j++) {
-                g.drawImage(levelSprite[32], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
+//                g.drawImage(levelSprite[32], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
                 l1index = levelOne.getLayer1Index(i, j) - 1;
                 l2index = levelOne.getLayer2Index(i, j) - 1;
-                g.drawImage(levelSprite[l1index], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
-                g.drawImage(levelSprite[l2index], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
+                g.drawImage(levelSprite[l1index], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
+                g.drawImage(levelSprite[l2index], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
             }
         }
     }

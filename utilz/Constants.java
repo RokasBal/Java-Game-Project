@@ -14,7 +14,7 @@ public class Constants {
         public static final int HEIGHT = 38;
         public static final int SPRITE_WIDTH = 120;
         public static final int SPRITE_HEIGHT = 80;
-        public static final int START_X = 400;
+        public static final int START_X = 550;
         public static final int START_Y = 700;
     }
 
@@ -41,8 +41,13 @@ public class Constants {
     public static class mapInfo {
         public static final int mapWidth = 50;
         public static final int mapHeight = 40;
+
         public static final int tileSize = 32;
         public static final float gameScale = 1.5f;
+        public static final int visibleTilesX = 20;
+        public static final int visibleTilesY = 14;
+        public static final int visibleWidth =  20 * (int) (tileSize * gameScale);
+        public static final int visibleHeight = 14 * (int) (tileSize * gameScale);
     }
 
     public static class physicsControl {
