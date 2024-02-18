@@ -14,22 +14,23 @@ import static utilz.Constants.Directions.*;
 import static utilz.Constants.Directions.DOWN;
 import static utilz.Constants.PlayerConstants.*;
 import static utilz.Constants.PlayerConstants.getSpriteAmount;
+import static utilz.Constants.physicsControl.playerSpeed;
 
 public class Player extends Entity{
 
     private BufferedImage[][] animations;
-    private int animationTick, animationIndex, animationSpeed = 30;
-    private int playerAction = RUNNING_RIGHT, playerDirection = -1;
+    private int animationTick, animationIndex, animationSpeed = 15;
+    private int playerAction = IDLE, playerDirection = -1;
     private boolean left, right, up, down, jump, moving = false;
     private boolean inAir = false;
     public static int startX = Constants.PlayerInfo.START_X, startY = Constants.PlayerInfo.START_Y;
-    private float playerSpeed = 2.5f, airSpeed = 0f;
-    private int animationsArraySizeX = 9, animationsArraySizeY = 3, spriteSizeX = 48, spriteSizeY = 48;
+    private float airSpeed = 0f;
+    private int animationsArraySizeX = 11, animationsArraySizeY = 8;
     private int[][] levelData;
     public Player(float x, float y, int width, int height) {
         super(x, y, width, height);
         loadAnimations();
-        initializeHitbox(x, y, 23f, 35f);
+        initializeHitbox(x, y, 20f * Constants.mapInfo.gameScale, 28f * Constants.mapInfo.gameScale);
     }
 
     public void update() {
@@ -40,19 +41,19 @@ public class Player extends Entity{
     }
 
     public void render(Graphics g) {
-        g.drawImage(animations[animationIndex][playerAction], (int)(hitbox.x - 12), (int)(hitbox.y - 4), 48, 48, null);
+        g.drawImage(animations[animationIndex][playerAction], (int)(hitbox.x - 45 * Constants.mapInfo.gameScale), (int)(hitbox.y - 50 * Constants.mapInfo.gameScale), (int)(Constants.PlayerInfo.SPRITE_WIDTH * Constants.mapInfo.gameScale), (int)(Constants.PlayerInfo.SPRITE_HEIGHT * Constants.mapInfo.gameScale), null);
         drawHitbox(g);
     }
 
     private void loadAnimations() {
-        InputStream is = LoadImages.class.getResourceAsStream("/res/mushroomSprite.png");
+        InputStream is = LoadImages.class.getResourceAsStream("/res/Knight_Sprite.png");
         BufferedImage img = null;
         try {
             img = ImageIO.read(is);
             animations = new BufferedImage[animationsArraySizeX][animationsArraySizeY];
             for(int j = 0; j < animations.length; j++) {
                 for(int k = 0; k < animations[j].length; k++) {
-                    animations[j][k] = img.getSubimage(j * spriteSizeX, k * spriteSizeY, spriteSizeX, spriteSizeY);
+                    animations[j][k] = img.getSubimage(j * Constants.PlayerInfo.SPRITE_WIDTH, k * Constants.PlayerInfo.SPRITE_HEIGHT, Constants.PlayerInfo.SPRITE_WIDTH, Constants.PlayerInfo.SPRITE_HEIGHT);
                 }
             }
         } catch (IOException e) {
@@ -67,18 +68,30 @@ public class Player extends Entity{
     }
 
     private void setAnimation(){
+        int startingAnimation = playerAction;
+
         if(moving) {
-            if(up || down) playerAction = RUNNING_RIGHT;
             if(right) playerAction = RUNNING_RIGHT;
             if(left) playerAction = RUNNING_LEFT;
         } else playerAction = IDLE;
 
         if(inAir) {
-//            if(airSpeed < 0) playerAction = JUMP;
-//            if(airSpeed < 0 && right) playerAction = JUMP_RIGHT;
-//            if(airSpeed <0 && left) playerAction = JUMP_LEFT;
-//            else playerAction = FALLING;
+            if(airSpeed < 0 && right) playerAction = JUMPING_RIGHT;
+            else if(airSpeed < 0 && left) playerAction = JUMPING_LEFT;
+            else if(airSpeed < 0) playerAction = JUMPING_RIGHT;
+            else {
+                if(right) playerAction = FALLING_RIGHT;
+                else if(left) playerAction = FALLING_LEFT;
+                else playerAction = FALLING_RIGHT;
+            }
         }
+
+        if(startingAnimation != playerAction) resetAnimationTick();
+    }
+
+    private void resetAnimationTick() {
+        animationTick = 0;
+        animationIndex = 0;
     }
 
     public void loadLevelData(int[][] levelData) {
