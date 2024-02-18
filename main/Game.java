@@ -4,7 +4,6 @@ import entities.Player;
 import utilz.Constants;
 
 import java.awt.*;
-import java.sql.PreparedStatement;
 import java.util.Objects;
 
 public class Game implements Runnable {
@@ -12,7 +11,7 @@ public class Game implements Runnable {
     private GameWindow gameWindow;
     private GamePanel gamePanel;
     private Thread gameThread;
-    private final int FPS_SET = 60;
+    private final int FPS_SET = 120;
     private final int UPS_SET = 200;
     private Player player;
     private ParseJSON parseJSON;
@@ -24,7 +23,7 @@ public class Game implements Runnable {
         initializeClasses();
         gamePanel = new GamePanel(this);
         gameWindow = new GameWindow(gamePanel);
-        parseJSON.readFromJson();
+        //parseJSON.readFromJson();
 
         gamePanel.requestFocus();
         startGameLoop();
@@ -33,7 +32,7 @@ public class Game implements Runnable {
     private void initializeClasses() {
         levelManager = new LevelManager(this);
         player = new Player(Player.startX, Player.startY, Constants.PlayerInfo.WIDTH, Constants.PlayerInfo.HEIGHT);
-        //player.loadLevelData(levelManager.getCurrentLevel().getLevelData());
+        player.loadLevelData(levelManager.getCurrentLevel().getLevelData());
     }
 
     private void startGameLoop() {
