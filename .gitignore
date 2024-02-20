@@ -1,6 +1,3 @@
-/out
+out/
 gameTest.iml
-.gitignore
-.gitattributes
-.git
-.idea
+.*/
