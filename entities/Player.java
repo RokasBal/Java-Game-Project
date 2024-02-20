@@ -1,5 +1,6 @@
 package entities;
 
+import main.LevelManager;
 import utilz.Constants;
 import utilz.LoadImages;
 
@@ -31,7 +32,7 @@ public class Player extends Entity{
     public Player(float x, float y, int width, int height) {
         super(x, y, width, height);
         loadAnimations();
-        initializeHitbox(x, y, 20f * Constants.mapInfo.gameScale, 28f * Constants.mapInfo.gameScale);
+        initializeHitbox(x, y, 12f * Constants.mapInfo.gameScale, 28f * Constants.mapInfo.gameScale);
     }
 
     public void update() {
@@ -43,15 +44,15 @@ public class Player extends Entity{
 
     public void render(Graphics g, int levelOffsetX, int levelOffsetY) {
         //System.out.println(hitbox.x + " " + hitbox.y);
-        g.drawImage(animations[animationIndex][playerAction], (int)(hitbox.x - 45 * Constants.mapInfo.gameScale) - levelOffsetX, (int)(hitbox.y - 50 * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.PlayerInfo.SPRITE_WIDTH * Constants.mapInfo.gameScale), (int)(Constants.PlayerInfo.SPRITE_HEIGHT * Constants.mapInfo.gameScale), null);
-        //drawHitbox(g, levelOffsetX, levelOffsetY);
+        g.drawImage(animations[animationIndex][playerAction], (int)(hitbox.x - 50 * Constants.mapInfo.gameScale) - levelOffsetX, (int)(hitbox.y - 50 * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.PlayerInfo.SPRITE_WIDTH * Constants.mapInfo.gameScale), (int)(Constants.PlayerInfo.SPRITE_HEIGHT * Constants.mapInfo.gameScale), null);
+        drawHitbox(g, levelOffsetX, levelOffsetY);
     }
 
     private void checkForDeath() {
         if(hasDied) {
 //            playerAction = DYING;
-            hitbox.x = Constants.PlayerInfo.START_X;
-            hitbox.y = Constants.PlayerInfo.START_Y;
+            hitbox.x = LevelManager.getCurrentLevel().startX;
+            hitbox.y = LevelManager.getCurrentLevel().startY;
             hasDied = false;
         }
     }

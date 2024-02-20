@@ -9,7 +9,7 @@ public class EditorWindow {
 
     public EditorWindow(EditorPanel editorPanel) {
         jframe = new JFrame();
-        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         jframe.add(editorPanel);
         jframe.pack();
         //jframe.setResizable(false);

@@ -38,6 +38,9 @@ public class KeyboardInputs implements KeyListener {
             case KeyEvent.VK_SPACE:
                 gamePanel.getGame().getPlayer().setJump(true);
                 break;
+            case KeyEvent.VK_E:
+                gamePanel.openEditor();
+                break;
         }
     }
 

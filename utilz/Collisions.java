@@ -39,29 +39,36 @@ public class Collisions {
         int value = levelData[(int)yIndex][(int)xIndex];
         int specialsValue = layer2Data[(int)yIndex][(int)xIndex];
 
-        if(specialsValue == 147) {
+        //Key collection
+        if(specialsValue == 88) {
             keyX = (int)xIndex;
             keyY = (int)yIndex;
             player.keyCollected = true;
-            layer2Data[(int)yIndex][(int)xIndex] = 4;
+            layer2Data[(int)yIndex][(int)xIndex] = 0;
         }
 
-        if((value >= 212 && value <= 217) || (value >= 233 && value <= 240) || value == 254 || value == 255 || value == 267 || value == 270) {
+        //Death condition
+        if((value >= 143 && value <= 151) || (value >= 156 && value <= 167)) {
             if(player.keyCollected) {
                 player.keyCollected = false;
-                layer2Data[keyY][keyX] = 147;
+                layer2Data[keyY][keyX] = 88;
             }
             player.hasDied = true;
             return true;
         }
 
-        if(value == 164 || value == 179) {
+        //Doors
+        if(value == 103 || value == 116) {
             if(player.keyCollected) {
                 System.out.println("Open door");
             }
         }
 
-        if((value > 6 && value < 120) || (value > 135 && value < 140) || (value > 150 && value < 155) || (value > 210 && value <= 270)){
+        //Collidable
+        if((value >= 3 && value <= 6) || (value >= 40 && value <= 45) || value == 53 || value == 55
+                || value == 56 || value == 58 || (value >= 66 && value <= 71) || (value >= 78 && value <= 80)
+                || value == 85 || value == 87 || value == 89 || value == 90 || (value >= 91 && value <= 93)
+                || value == 100 || value == 128 || value == 126){
             return true;
         } else return false;
     }

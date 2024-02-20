@@ -45,7 +45,7 @@ public class ParseJSON {
         //Lukšo darbas
 
         int[][] mapData = new int[Constants.mapInfo.mapHeight][Constants.mapInfo.mapWidth];
-        InputStream is = ParseJSON.class.getResourceAsStream("/res/" + fileName);
+        InputStream is = ParseJSON.class.getResourceAsStream("/levels/" + fileName);
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             StringBuilder contents = new StringBuilder();

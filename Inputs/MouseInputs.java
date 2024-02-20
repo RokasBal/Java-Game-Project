@@ -11,9 +11,9 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 
     private GamePanel gamePanel;
     private EditorPanel editorPanel;
-    public MouseInputs(GamePanel gamePanel) {
-        this.gamePanel = gamePanel;
-    }
+//    public MouseInputs(GamePanel gamePanel) {
+//        this.gamePanel = gamePanel;
+//    }
 
     public MouseInputs(EditorPanel editorPanel) {
         this.editorPanel = editorPanel;
@@ -51,7 +51,9 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-
+        if(e.getY() >= 416) {
+            editorPanel.drawTile(e.getX(), e.getY());
+        }
     }
 
     @Override

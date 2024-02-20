@@ -17,17 +17,19 @@ public class LevelManager {
     private BufferedImage backgroundImage;
     private static int[][] array;
     private static Level currentLevel;
-    private Level levelOne;
+    private Level tutorial, levelOne;
     private Level levelTwo;
+    private Level testlevel;
     public boolean keyCollected = false;
 
     public LevelManager(Game game) {
         this.game = game;
         importOutsideSprites();
-        levelOne = new Level(ParseJSON.readFromJson("tutorial2.json", 0), ParseJSON.readFromJson("tutorial2.json", 1), 347, 821);
-        levelTwo = new Level(ParseJSON.readFromJson("level2.json", 0), ParseJSON.readFromJson("level2.json", 1), 500, 200);
+        //levelOne = new Level(ParseJSON.readFromJson("tutorial2.json", 0, levelOne), ParseJSON.readFromJson("tutorial2.json", 1, levelOne));
+        tutorial = new Level(ParseJSON.readFromJson("tutorial.json", 0), ParseJSON.readFromJson("tutorial.json", 1));
+        testlevel = new Level(ParseJSON.readFromJson("test_export.json", 0), ParseJSON.readFromJson("test_export.json", 1));
         //levelTwo = new Level(ParseJSON.readFromJson("test_dungeon.json", 0), ParseJSON.readFromJson("test_dungeon.json", 1));
-        currentLevel = levelTwo;
+        currentLevel = testlevel;
     }
 
     private void importOutsideSprites() {
@@ -45,14 +47,14 @@ public class LevelManager {
         int l1index = 0, l2index = 0;
         for(int i = 0; i < Constants.mapInfo.mapHeight * 4; i++) {
             for (int j = 0; j < Constants.mapInfo.mapWidth * 4; j++) {
-                g.drawImage(levelSprite[32], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
+                g.drawImage(levelSprite[54], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
             }
         }
         for (int i = 0; i < Constants.mapInfo.mapHeight; i++) {
             for (int j = 0; j < Constants.mapInfo.mapWidth; j++) {
-                g.drawImage(levelSprite[32], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
-                l1index = currentLevel.getLayer1Index(i, j) - 1;
-                l2index = currentLevel.getLayer2Index(i, j) - 1;
+//                g.drawImage(levelSprite[32], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
+                l1index = currentLevel.getLayer1Index(i, j);
+                l2index = currentLevel.getLayer2Index(i, j);
                 g.drawImage(levelSprite[l1index], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
                 g.drawImage(levelSprite[l2index], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
             }

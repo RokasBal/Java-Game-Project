@@ -26,7 +26,6 @@ public class EditorInputs implements KeyListener {
                 }
                 break;
             case KeyEvent.VK_O:
-                System.out.println("test");
                 break;
         }
     }

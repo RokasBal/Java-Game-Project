@@ -4,6 +4,7 @@ import Inputs.EditorInputs;
 import Inputs.KeyboardInputs;
 import Inputs.MouseInputs;
 import main.Game;
+import main.ParseJSON;
 import utilz.Constants;
 import utilz.LoadImages;
 
@@ -33,6 +34,7 @@ public class EditorPanel extends JPanel {
         addMouseMotionListener(mouseInputs);
         loadTileMap();
         initializeMapArray();
+        loadData();
         setFocusable(true);
     }
 
@@ -95,6 +97,11 @@ public class EditorPanel extends JPanel {
         render(g);
     }
 
+    private void loadData() {
+        mapArray = ParseJSON.readFromJson("test_export.json", 0);
+    }
+
+
     public void render(Graphics g) {
         //Draw selected tile
         g.drawImage(levelSprite[selectedTile], 512, 80, 256, 256,null);
@@ -117,6 +124,7 @@ public class EditorPanel extends JPanel {
 
     public void tileSelected(int x, int y) {
         selectedTile = (y / 32 * 13) + (x / 32);
+        System.out.println(selectedTile);
     }
 
     private void loadTileMap() {
@@ -145,24 +153,39 @@ public class EditorPanel extends JPanel {
             }
         }
 
-        System.out.println("In save function");
-
-        JSONArray dataArray = new JSONArray();
+        JSONArray layer1Data = new JSONArray();
         for (int value : saveArray) {
-            dataArray.add(value);
+            layer1Data.add(value);
+        }
+        JSONArray layer2Data = new JSONArray();
+        for (int value : saveArray) {
+            layer2Data.add(value);
         }
 
+        JSONObject layer1 = new JSONObject();
+        layer1.put("data", layer1Data);
+
+        JSONObject layer2 = new JSONObject();
+        layer2.put("data", layer2Data);
+
+        JSONArray layersArray = new JSONArray();
+        layersArray.add(layer1);
+        layersArray.add(layer2);
+
         JSONObject saveToFile = new JSONObject();
-        saveToFile.put("Data", dataArray);
-        File outputFile = new File("res/test_export.json");
+        saveToFile.put("layers", layersArray);
+
+        File outputFile = new File("levels/test_export.json");
         if (!outputFile.exists()) {
             outputFile.createNewFile();
         }
-        try(FileWriter file = new FileWriter("res/test_export.json")) {
+        try(FileWriter file = new FileWriter("levels/test_export.json")) {
             file.write(saveToFile.toJSONString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        System.out.println("Save complete");
     }
 }
 
