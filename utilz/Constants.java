@@ -14,8 +14,8 @@ public class Constants {
         public static final int HEIGHT = 38;
         public static final int SPRITE_WIDTH = 120;
         public static final int SPRITE_HEIGHT = 80;
-        public static final int START_X = 550;
-        public static final int START_Y = 700;
+        public static final int START_X = 347;
+        public static final int START_Y = 821;
     }
 
     public static class PlayerConstants {

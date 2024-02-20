@@ -20,22 +20,14 @@ public class Player extends Entity{
 
     private BufferedImage[][] animations;
     private int animationTick, animationIndex, animationSpeed = 13;
-    private int playerAction = IDLE, playerDirection = -1;
+    public int playerAction = IDLE, playerDirection = -1;
     private boolean left, right, up, down, jump, moving = false;
     private boolean inAir = false;
     public static int startX = Constants.PlayerInfo.START_X, startY = Constants.PlayerInfo.START_Y;
     private float airSpeed = 0f;
+    public boolean hasDied = false, keyCollected = false;
     private int animationsArraySizeX = 11, animationsArraySizeY = 8;
-//    private int levelOffsetX, levelOffsetY;
-//    private int leftBorder = (int)(0.2 * Constants.mapInfo.visibleWidth);
-//    private int rightBorder = (int)(0.8 * Constants.mapInfo.visibleWidth);
-//    private int upperBorder = (int)(0.2 * Constants.mapInfo.visibleHeight);
-//    private int lowerBorder = (int)(0.8 * Constants.mapInfo.visibleHeight);
-//    private int maxTilesOffsetX = Constants.mapInfo.mapWidth - Constants.mapInfo.visibleWidth;
-//    private int maxTilesOffsetY = Constants.mapInfo.mapHeight - Constants.mapInfo.visibleHeight;
-//    private int maxOfsetX = maxTilesOffsetX * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale);
-//    private int maxOfsetY = maxTilesOffsetY * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale);
-    private int[][] levelData;
+    private int[][] levelData, layer2Data;
     public Player(float x, float y, int width, int height) {
         super(x, y, width, height);
         loadAnimations();
@@ -46,11 +38,22 @@ public class Player extends Entity{
         updatePosition();
         updateAnimationTick();
         setAnimation();
+        checkForDeath();
     }
 
     public void render(Graphics g, int levelOffsetX, int levelOffsetY) {
+        //System.out.println(hitbox.x + " " + hitbox.y);
         g.drawImage(animations[animationIndex][playerAction], (int)(hitbox.x - 45 * Constants.mapInfo.gameScale) - levelOffsetX, (int)(hitbox.y - 50 * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.PlayerInfo.SPRITE_WIDTH * Constants.mapInfo.gameScale), (int)(Constants.PlayerInfo.SPRITE_HEIGHT * Constants.mapInfo.gameScale), null);
-        drawHitbox(g, levelOffsetX, levelOffsetY);
+        //drawHitbox(g, levelOffsetX, levelOffsetY);
+    }
+
+    private void checkForDeath() {
+        if(hasDied) {
+//            playerAction = DYING;
+            hitbox.x = Constants.PlayerInfo.START_X;
+            hitbox.y = Constants.PlayerInfo.START_Y;
+            hasDied = false;
+        }
     }
     private void loadAnimations() {
         InputStream is = LoadImages.class.getResourceAsStream("/res/Knight_Sprite.png");
@@ -101,9 +104,10 @@ public class Player extends Entity{
         animationIndex = 0;
     }
 
-    public void loadLevelData(int[][] levelData) {
-        this.levelData = levelData;
-        if(!IsEntityOnGround(hitbox, levelData)){
+    public void loadLevelData(int[][] mainLayerData, int[][] layer2Data) {
+        this.levelData = mainLayerData;
+        this.layer2Data = layer2Data;
+        if(!IsEntityOnGround(hitbox, levelData, layer2Data, this)){
             inAir = true;
         }
     }
@@ -135,13 +139,13 @@ public class Player extends Entity{
             xSpeed += playerSpeed;
 
         if(!inAir) {
-            if(!IsEntityOnGround(hitbox, levelData)) {
+            if(!IsEntityOnGround(hitbox, levelData, layer2Data, this)) {
                 inAir = true;
             }
         }
 
         if(inAir) {
-            if(CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, levelData)) {
+            if(CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, levelData, layer2Data, this)) {
                 hitbox.y += airSpeed;
                 airSpeed += Constants.physicsControl.gravity;
                 updateXPosition(xSpeed);
@@ -174,7 +178,7 @@ public class Player extends Entity{
     }
 
     private void updateXPosition(float xSpeed) {
-        if(CanMoveHere(hitbox.x + xSpeed, hitbox.y, (int) hitbox.width, (int) hitbox.height, levelData)) {
+        if(CanMoveHere(hitbox.x + xSpeed, hitbox.y, (int) hitbox.width, (int) hitbox.height, levelData, layer2Data, this)) {
             hitbox.x += xSpeed;
         } else {
             hitbox.x = GetEntityXPositionByWall(hitbox, xSpeed);

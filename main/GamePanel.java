@@ -17,6 +17,7 @@ import static utilz.Constants.Directions.*;
 public class GamePanel extends JPanel {
 
     private MouseInputs mouseInputs;
+
     private Game game;
 
     public GamePanel(Game game) {

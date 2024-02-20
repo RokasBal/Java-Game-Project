@@ -8,7 +8,7 @@ import java.nio.Buffer;
 
 public class LoadImages {
 
-    public static final String TILESET_FILE = "dungeon_set.png";
+    public static final String TILESET_FILE = "dungeon_set_2.png";
     public static final String SPRITE_FILE = "Knight_Sprite.png";
     public static final String BACKGROUND_IMAGE = "Brown.png";
 

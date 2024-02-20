@@ -1,5 +1,7 @@
 package main;
 
+import Editor.EditorPanel;
+import Editor.EditorWindow;
 import entities.Player;
 import utilz.Constants;
 
@@ -11,6 +13,8 @@ public class Game implements Runnable {
     private GameWindow gameWindow;
     private GamePanel gamePanel;
     private Thread gameThread;
+    private EditorPanel editorPanel;
+    private EditorWindow editorWindow;
     private final int FPS_SET = 165;
     private final int UPS_SET = 200;
     private Player player;
@@ -27,21 +31,23 @@ public class Game implements Runnable {
     private int maxTilesOffsetY = Constants.mapInfo.mapHeight - Constants.mapInfo.visibleTilesY;
     private int maxOfsetX = maxTilesOffsetX * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale);
     private int maxOfsetY = maxTilesOffsetY * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale);
+    private int startingX, startingY;
     private String osName = System.getProperty("os.name");
     public Game() {
         initializeClasses();
         gamePanel = new GamePanel(this);
         gameWindow = new GameWindow(gamePanel);
         //parseJSON.readFromJson();
-
         gamePanel.requestFocus();
         startGameLoop();
     }
 
     private void initializeClasses() {
         levelManager = new LevelManager(this);
-        player = new Player(Player.startX, Player.startY, Constants.PlayerInfo.WIDTH, Constants.PlayerInfo.HEIGHT);
-        player.loadLevelData(levelManager.getCurrentLevel().getLevelData());
+        startingX = LevelManager.getCurrentLevel().startX;
+        startingY = LevelManager.getCurrentLevel().startY;
+        player = new Player(startingX, startingY, Constants.PlayerInfo.WIDTH, Constants.PlayerInfo.HEIGHT);
+        player.loadLevelData(levelManager.getCurrentLevel().getLevelData(), levelManager.getCurrentLevel().getLayer1Data());
     }
 
     private void startGameLoop() {
@@ -56,7 +62,7 @@ public class Game implements Runnable {
     }
 
     public void render(Graphics g) {
-        levelManager.draw(g, levelOffsetX, levelOffsetY);
+        levelManager.draw(g, levelOffsetX, levelOffsetY, player);
         player.render(g, levelOffsetX, levelOffsetY);
     }
     public void checkIfNearBorder() {
@@ -129,7 +135,7 @@ public class Game implements Runnable {
 
             if(System.currentTimeMillis() - lastCheck >= 1000) {
                 lastCheck = System.currentTimeMillis();
-                System.out.println(frames + " " + updates);
+//                System.out.println(frames + " " + updates);
                 frames = 0;
                 updates = 0;
             }

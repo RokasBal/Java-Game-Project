@@ -1,5 +1,6 @@
 package main;
 
+import entities.Player;
 import utilz.Constants;
 import utilz.LoadImages;
 import main.ParseJSON.*;
@@ -15,14 +16,18 @@ public class LevelManager {
     //BufferedImage img2 = LoadImages.GetSpriteImage(LoadImages.BACKGROUND_IMAGE);
     private BufferedImage backgroundImage;
     private static int[][] array;
-    private Level currentLevel, levelOne, levelTwo;
+    private static Level currentLevel;
+    private Level levelOne;
+    private Level levelTwo;
+    public boolean keyCollected = false;
 
     public LevelManager(Game game) {
         this.game = game;
         importOutsideSprites();
-        levelOne = new Level(ParseJSON.readFromJson("tutorial2.json", 0), ParseJSON.readFromJson("tutorial2.json", 1));
+        levelOne = new Level(ParseJSON.readFromJson("tutorial2.json", 0), ParseJSON.readFromJson("tutorial2.json", 1), 347, 821);
+        levelTwo = new Level(ParseJSON.readFromJson("level2.json", 0), ParseJSON.readFromJson("level2.json", 1), 500, 200);
         //levelTwo = new Level(ParseJSON.readFromJson("test_dungeon.json", 0), ParseJSON.readFromJson("test_dungeon.json", 1));
-        currentLevel = levelOne;
+        currentLevel = levelTwo;
     }
 
     private void importOutsideSprites() {
@@ -36,7 +41,7 @@ public class LevelManager {
         }
     }
 
-    public void draw(Graphics g, int levelOffsetX, int levelOffsetY) {
+    public void draw(Graphics g, int levelOffsetX, int levelOffsetY, Player player) {
         int l1index = 0, l2index = 0;
         for(int i = 0; i < Constants.mapInfo.mapHeight * 4; i++) {
             for (int j = 0; j < Constants.mapInfo.mapWidth * 4; j++) {
@@ -45,9 +50,9 @@ public class LevelManager {
         }
         for (int i = 0; i < Constants.mapInfo.mapHeight; i++) {
             for (int j = 0; j < Constants.mapInfo.mapWidth; j++) {
-//                g.drawImage(levelSprite[32], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
-                l1index = levelOne.getLayer1Index(i, j) - 1;
-                l2index = levelOne.getLayer2Index(i, j) - 1;
+                g.drawImage(levelSprite[32], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
+                l1index = currentLevel.getLayer1Index(i, j) - 1;
+                l2index = currentLevel.getLayer2Index(i, j) - 1;
                 g.drawImage(levelSprite[l1index], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
                 g.drawImage(levelSprite[l2index], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
             }
@@ -58,8 +63,8 @@ public class LevelManager {
 
     }
 
-    public Level getCurrentLevel() {
-        return levelOne;
+    public static Level getCurrentLevel() {
+        return currentLevel;
     }
 
 }
