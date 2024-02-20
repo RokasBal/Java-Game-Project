@@ -1,25 +1,39 @@
 package Editor;
 
+import Inputs.EditorInputs;
 import Inputs.KeyboardInputs;
 import Inputs.MouseInputs;
 import main.Game;
 import utilz.Constants;
 import utilz.LoadImages;
 
+import org.json.simple.*;
+
 import javax.swing.*;
+import javax.xml.crypto.dsig.spec.HMACParameterSpec;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class EditorPanel extends JPanel {
     private BufferedImage[] levelSprite;
     private MouseInputs mouseInputs;
     public int selectedTile;
+    public boolean drawTile = false;
+    private int tileX, tileY;
+    int[][] mapArray = new int[40][50];
+    int[] saveArray = new int[2000];
     public EditorPanel() {
         mouseInputs = new MouseInputs(this);
         setPanelSize();
+        addKeyListener(new EditorInputs(this));
         addMouseListener(mouseInputs);
         addMouseMotionListener(mouseInputs);
         loadTileMap();
+        initializeMapArray();
+        setFocusable(true);
     }
 
     private void setPanelSize() {
@@ -29,12 +43,16 @@ public class EditorPanel extends JPanel {
         setMaximumSize(size);
     }
 
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        render(g);
+    private void initializeMapArray() {
+        for(int i = 0; i < 40; i++) {
+            for(int j = 0; j < 50; j++) {
+                mapArray[i][j] = 0;
+            }
+        }
     }
 
-    public void render(Graphics g) {
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         int index = 0;
 
         //Draw top background
@@ -42,29 +60,19 @@ public class EditorPanel extends JPanel {
             for(int j = 0; j < 50; j++) {
                 if(j % 2 == 0) {
                     if(i % 2 == 0) {
-                        g.drawImage(levelSprite[42], j * 32, i * 32, null);
-                    } else g.drawImage(levelSprite[43], j * 32, i * 32, null);
+                        g.drawImage(levelSprite[39], j * 32, i * 32, null);
+                    } else g.drawImage(levelSprite[52], j * 32, i * 32, null);
                 } else if(i % 2 == 0) {
-                    g.drawImage(levelSprite[43], j * 32, i * 32, null);
-                } else g.drawImage(levelSprite[42], j * 32, i * 32, null);
+                    g.drawImage(levelSprite[52], j * 32, i * 32, null);
+                } else g.drawImage(levelSprite[39], j * 32, i * 32, null);
             }
         }
 
         //Draw map background
         for(int i = 13; i < 53; i++) {
             for(int j = 0; j < 50; j++) {
-                g.drawImage(levelSprite[14], j * 32, i * 32, null);
+                g.drawImage(levelSprite[54], j * 32, i * 32, null);
             }
-        }
-
-        //Draw grid
-        for(int i = 13; i < 53; i++) {
-            g.setColor(Color.gray);
-            g.drawLine(0, i * 32, 32 * 51, i * 32);
-        }
-        for(int i = 0; i < 50; i++) {
-            g.setColor(Color.gray);
-            g.drawLine(i * 32, 13 * 32, i * 32, 32 * 41);
         }
 
         //Draw tilemap
@@ -75,12 +83,40 @@ public class EditorPanel extends JPanel {
             }
         }
 
+        //Draw tilemap grid
+        for(int i = 0; i < 13; i++) {
+            g.setColor(Color.gray);
+            g.drawLine(0, i * 32, 13 * 32, i * 32);
+        }
+        for(int i = 0; i < 14; i++) {
+            g.setColor(Color.gray);
+            g.drawLine(i * 32, 0, i * 32, 13 * 32);
+        }
+        render(g);
+    }
+
+    public void render(Graphics g) {
         //Draw selected tile
         g.drawImage(levelSprite[selectedTile], 512, 80, 256, 256,null);
+        for(int i = 0; i < 40; i++) {
+            for(int j = 0; j < 50; j++) {
+                g.drawImage(levelSprite[mapArray[i][j]], j * 32, i * 32 + 416, 32, 32, null);
+            }
+        }
+
+        //Draw map grid
+        for(int i = 13; i < 53; i++) {
+            g.setColor(Color.gray);
+            g.drawLine(0, i * 32, 32 * 51, i * 32);
+        }
+        for(int i = 0; i < 50; i++) {
+            g.setColor(Color.gray);
+            g.drawLine(i * 32, 13 * 32, i * 32, 32 * 41);
+        }
     }
 
     public void tileSelected(int x, int y) {
-        selectedTile = (y / 32 * 13 + 1) + (x / 32) - 1;
+        selectedTile = (y / 32 * 13) + (x / 32);
     }
 
     private void loadTileMap() {
@@ -91,6 +127,41 @@ public class EditorPanel extends JPanel {
                 int index = j * (img.getWidth() / Constants.mapInfo.tileSize) + i;
                 levelSprite[index] = img.getSubimage(i * Constants.mapInfo.tileSize, j * Constants.mapInfo.tileSize, Constants.mapInfo.tileSize, Constants.mapInfo.tileSize);
             }
+        }
+    }
+
+    public void drawTile(int x, int y) {
+        tileX = x / 32;
+        tileY = (y - 416) / 32;
+        mapArray[tileY][tileX] = selectedTile;
+    }
+
+    public void saveToJSON() throws IOException {
+        int index = 0;
+        for(int i = 0; i < 40; i++) {
+            for(int j = 0; j < 50; j++) {
+                saveArray[index] = mapArray[i][j];
+                index++;
+            }
+        }
+
+        System.out.println("In save function");
+
+        JSONArray dataArray = new JSONArray();
+        for (int value : saveArray) {
+            dataArray.add(value);
+        }
+
+        JSONObject saveToFile = new JSONObject();
+        saveToFile.put("Data", dataArray);
+        File outputFile = new File("res/test_export.json");
+        if (!outputFile.exists()) {
+            outputFile.createNewFile();
+        }
+        try(FileWriter file = new FileWriter("res/test_export.json")) {
+            file.write(saveToFile.toJSONString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

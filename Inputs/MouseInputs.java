@@ -24,6 +24,9 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
         if(e.getX() <= 416 && e.getY() <= 416) {
             editorPanel.tileSelected(e.getX(), e.getY());
         }
+        if(e.getY() >= 416) {
+            editorPanel.drawTile(e.getX(), e.getY());
+        }
     }
 
     @Override

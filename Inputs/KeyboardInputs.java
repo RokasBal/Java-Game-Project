@@ -1,5 +1,6 @@
 package Inputs;
 
+import Editor.EditorPanel;
 import main.GamePanel;
 
 import java.awt.event.KeyEvent;
