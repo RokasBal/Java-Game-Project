@@ -18,14 +18,22 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Pagrindinė lygiu editoriaus klasė.
+ * Šioje klasėje yra visas editoriaus funkcionalumas
+ * @author Rokas Baliutavičius, 5 grupė
+ */
+
 public class EditorPanel extends JPanel {
     private BufferedImage[] levelSprite;
     private MouseInputs mouseInputs;
     public int selectedTile;
     public boolean drawTile = false;
     private int tileX, tileY;
-    int[][] mapArray = new int[40][50];
-    int[] saveArray = new int[2000];
+    public static int selectedLayer = 1;
+    int[][] mapArray = new int[40][50], layer1 = new int[40][50], layer2 = new int[40][50], layer3 = new int[40][50];
+    int[] saveArray = new int[2000], saveL1 = new int[2000], saveL2 = new int[2000], saveL3 = new int[2000];
+    Font selectionFont = new Font("8Bit Wonder", Font.PLAIN, 48);
     public EditorPanel() {
         mouseInputs = new MouseInputs(this);
         setPanelSize();
@@ -34,7 +42,7 @@ public class EditorPanel extends JPanel {
         addMouseMotionListener(mouseInputs);
         loadTileMap();
         initializeMapArray();
-        loadData();
+//        loadData();
         setFocusable(true);
     }
 
@@ -73,7 +81,7 @@ public class EditorPanel extends JPanel {
         //Draw map background
         for(int i = 13; i < 53; i++) {
             for(int j = 0; j < 50; j++) {
-                g.drawImage(levelSprite[54], j * 32, i * 32, null);
+                g.drawImage(levelSprite[57], j * 32, i * 32, null);
             }
         }
 
@@ -97,18 +105,50 @@ public class EditorPanel extends JPanel {
         render(g);
     }
 
-    private void loadData() {
-        mapArray = ParseJSON.readFromJson("test_export.json", 0);
+    public void loadData() {
+        String fileName = JOptionPane.showInputDialog(null, "Enter filename: ");
+        if(fileName == null) {
+            System.out.println("Loading canceled");
+            return;
+        }
+        if(!fileName.contains(".json")) fileName = fileName + ".json";
+
+        layer1 = ParseJSON.readFromJson(fileName, 0);
+        layer2 = ParseJSON.readFromJson(fileName, 1);
+        layer3 = ParseJSON.readFromJson(fileName, 2);
+//        for(int i = 0; i < 40; i++) {
+//            for(int j = 0; j < 50; j++) {
+//                layer1[i][j] = layer1[i][j] + 1;
+//                layer2[i][j] = layer2[i][j] + 1;
+//                layer3[i][j] = layer3[i][j] + 1;
+//            }
+//        }
     }
 
 
     public void render(Graphics g) {
         //Draw selected tile
         g.drawImage(levelSprite[selectedTile], 512, 80, 256, 256,null);
+        g.setColor(Color.BLACK);
+        g.setFont(selectionFont);
         for(int i = 0; i < 40; i++) {
             for(int j = 0; j < 50; j++) {
-                g.drawImage(levelSprite[mapArray[i][j]], j * 32, i * 32 + 416, 32, 32, null);
+                g.drawImage(levelSprite[layer1[i][j]], j * 32, i * 32 + 416, 32, 32, null);
+                g.drawImage(levelSprite[layer2[i][j]], j * 32, i * 32 + 416, 32, 32, null);
+                g.drawImage(levelSprite[layer3[i][j]], j * 32, i * 32 + 416, 32, 32, null);
             }
+        }
+
+        switch(selectedLayer) {
+            case 0:
+                g.drawString("Background", 50 * 32 - 500, 13 * 32 / 2);
+                break;
+            case 1:
+                g.drawString("Solid", 50 * 32 - 400, 13 * 32 / 2);
+                break;
+            case 2:
+                g.drawString("Foreground", 50 * 32 - 500, 13 * 32 / 2);
+                break;
         }
 
         //Draw map grid
@@ -141,25 +181,50 @@ public class EditorPanel extends JPanel {
     public void drawTile(int x, int y) {
         tileX = x / 32;
         tileY = (y - 416) / 32;
-        mapArray[tileY][tileX] = selectedTile;
+        if(selectedTile == 168) {
+            layer3[tileY][tileX] = selectedTile;
+            return;
+        }
+        if(selectedTile == 88 || selectedTile == 103 || selectedTile == 116) {
+            layer1[tileY][tileX] = selectedTile;
+            return;
+        }
+        switch(selectedLayer){
+            case 0:
+                layer1[tileY][tileX] = selectedTile;
+                break;
+            case 1:
+                layer2[tileY][tileX] = selectedTile;
+                break;
+            case 2:
+                layer3[tileY][tileX] = selectedTile;
+                break;
+        }
+//        mapArray[tileY][tileX] = selectedTile;
     }
 
     public void saveToJSON() throws IOException {
         int index = 0;
         for(int i = 0; i < 40; i++) {
             for(int j = 0; j < 50; j++) {
-                saveArray[index] = mapArray[i][j];
+                saveL1[index] = layer1[i][j] + 1;
+                saveL2[index] = layer2[i][j] + 1;
+                saveL3[index] = layer3[i][j] + 1;
                 index++;
             }
         }
 
         JSONArray layer1Data = new JSONArray();
-        for (int value : saveArray) {
+        for (int value : saveL1) {
             layer1Data.add(value);
         }
         JSONArray layer2Data = new JSONArray();
-        for (int value : saveArray) {
+        for (int value : saveL2) {
             layer2Data.add(value);
+        }
+        JSONArray layer3Data = new JSONArray();
+        for (int value : saveL3) {
+            layer3Data.add(value);
         }
 
         JSONObject layer1 = new JSONObject();
@@ -168,21 +233,43 @@ public class EditorPanel extends JPanel {
         JSONObject layer2 = new JSONObject();
         layer2.put("data", layer2Data);
 
+        JSONObject layer3 = new JSONObject();
+        layer3.put("data", layer3Data);
+
         JSONArray layersArray = new JSONArray();
         layersArray.add(layer1);
         layersArray.add(layer2);
+        layersArray.add(layer3);
 
         JSONObject saveToFile = new JSONObject();
         saveToFile.put("layers", layersArray);
 
-        File outputFile = new File("levels/test_export.json");
-        if (!outputFile.exists()) {
-            outputFile.createNewFile();
+        String fileName = JOptionPane.showInputDialog(null, "Enter desired filename: ");
+        if(fileName == null) {
+            requestFocus();
+            System.out.println("Saving canceled");
+            return;
         }
-        try(FileWriter file = new FileWriter("levels/test_export.json")) {
-            file.write(saveToFile.toJSONString());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(fileName.contains(".json")) {
+            File outputFile = new File("levels/" + fileName);
+            if (!outputFile.exists()) {
+                outputFile.createNewFile();
+            }
+            try(FileWriter file = new FileWriter("levels/" + fileName)) {
+                file.write(saveToFile.toJSONString());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            File outputFile = new File("levels/" + fileName + ".json");
+            if (!outputFile.exists()) {
+                outputFile.createNewFile();
+            }
+            try(FileWriter file = new FileWriter("levels/" + fileName + ".json")) {
+                file.write(saveToFile.toJSONString());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         System.out.println("Save complete");

@@ -5,8 +5,10 @@ import utilz.Constants;
 import utilz.LoadImages;
 import main.ParseJSON.*;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class LevelManager {
 
@@ -15,21 +17,31 @@ public class LevelManager {
     private BufferedImage[] levelSprite;
     //BufferedImage img2 = LoadImages.GetSpriteImage(LoadImages.BACKGROUND_IMAGE);
     private BufferedImage backgroundImage;
+    private static Level currentLevelStatic;
     private static int[][] array;
-    private static Level currentLevel;
+    public  Level currentLevel;
     private Level tutorial, levelOne;
-    private Level levelTwo;
+    private Level levelTwo, levelThree;
     private Level testlevel;
     public boolean keyCollected = false;
+    public ArrayList<Level> levels = new ArrayList<>();
+    private int index = 1;
+
+    /**
+     * Klasė, vykdanti lygių piešimą bei keitimą.
+     * @author Rokas Baliutavičius, 5 grupė
+     */
 
     public LevelManager(Game game) {
         this.game = game;
         importOutsideSprites();
-        //levelOne = new Level(ParseJSON.readFromJson("tutorial2.json", 0, levelOne), ParseJSON.readFromJson("tutorial2.json", 1, levelOne));
-        tutorial = new Level(ParseJSON.readFromJson("tutorial.json", 0), ParseJSON.readFromJson("tutorial.json", 1));
-        testlevel = new Level(ParseJSON.readFromJson("test_export.json", 0), ParseJSON.readFromJson("test_export.json", 1));
-        //levelTwo = new Level(ParseJSON.readFromJson("test_dungeon.json", 0), ParseJSON.readFromJson("test_dungeon.json", 1));
-        currentLevel = testlevel;
+        tutorial = new Level(ParseJSON.readFromJson("tutorial.json", 0), ParseJSON.readFromJson("tutorial.json", 1), ParseJSON.readFromJson("tutorial.json", 2));
+        levels.add(tutorial);
+        levelTwo = new Level(ParseJSON.readFromJson("levelTwo.json", 0), ParseJSON.readFromJson("levelTwo.json", 1), ParseJSON.readFromJson("levelTwo.json", 2));
+        levels.add(levelTwo);
+        levelThree = new Level(ParseJSON.readFromJson("level2.json", 0), ParseJSON.readFromJson("level2.json", 1), ParseJSON.readFromJson("level2.json", 2));
+        levels.add(levelThree);
+        currentLevel = tutorial;
     }
 
     private void importOutsideSprites() {
@@ -44,7 +56,7 @@ public class LevelManager {
     }
 
     public void draw(Graphics g, int levelOffsetX, int levelOffsetY, Player player) {
-        int l1index = 0, l2index = 0;
+        int l1index = 0, l2index = 0, l3index = 0;
         for(int i = 0; i < Constants.mapInfo.mapHeight * 4; i++) {
             for (int j = 0; j < Constants.mapInfo.mapWidth * 4; j++) {
                 g.drawImage(levelSprite[54], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
@@ -52,7 +64,6 @@ public class LevelManager {
         }
         for (int i = 0; i < Constants.mapInfo.mapHeight; i++) {
             for (int j = 0; j < Constants.mapInfo.mapWidth; j++) {
-//                g.drawImage(levelSprite[32], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
                 l1index = currentLevel.getLayer1Index(i, j);
                 l2index = currentLevel.getLayer2Index(i, j);
                 g.drawImage(levelSprite[l1index], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
@@ -61,12 +72,50 @@ public class LevelManager {
         }
     }
 
+    public void drawForeground(Graphics g, int levelOffsetX, int levelOffsetY, Player player) {
+        for (int i = 0; i < Constants.mapInfo.mapHeight; i++) {
+            for (int j = 0; j < Constants.mapInfo.mapWidth; j++) {
+                int l3index = currentLevel.getLayer3Index(i, j);
+                g.drawImage(levelSprite[l3index], j * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetX, i * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale), null);
+            }
+        }
+    }
+
     public void update() {
 
     }
 
-    public static Level getCurrentLevel() {
+    public Level getCurrentLevel() {
         return currentLevel;
     }
 
+    public void changeLevel() {
+        game.getPlayer().keyCollected = false;
+        utilz.Collisions.redrawKey(game.getPlayer());
+
+        if(index < levels.size()) {
+            currentLevel = levels.get(index);
+            index++;
+        } else {
+            index = 0;
+            currentLevel = levels.get(index);
+            index++;
+        }
+
+        game.getPlayer().loadLevelData(currentLevel.getLevel1Data(), currentLevel.getLayer2Data(), currentLevel.getLayer3Data());
+        game.getPlayer().getHitbox().x = currentLevel.startX;
+        game.getPlayer().getHitbox().y = currentLevel.startY;
+    }
+
+    public void addLevel() {
+        String fileName = JOptionPane.showInputDialog(null, "Enter filename: ");
+        if(fileName == null) {
+            System.out.println("Loading canceled");
+            return;
+        }
+        if(!fileName.contains(".json")) fileName = fileName + ".json";
+        Level userLevel = new Level(ParseJSON.readFromJson(fileName, 0), ParseJSON.readFromJson(fileName, 1), ParseJSON.readFromJson(fileName, 2));
+        levels.add(userLevel);
+        System.out.println("Success (LevelManager : 120");
+    }
 }

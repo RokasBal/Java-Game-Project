@@ -10,26 +10,33 @@ import main.LevelManager;
 
 import static utilz.Constants.PlayerConstants.*;
 
+/**
+ * Klasė, naudojama tikrinti žaidėjo susidūrimą su žemėlapiu.
+ * @author Rokas Baliutavičius, 5 grupė
+ */
 
 public class Collisions {
     private static int keyX;
     private static int keyY;
-    public static boolean CanMoveHere(float x, float y, float width, float height, int[][] levelData, int[][] layer2Data, Player player) {
-        if(!IsSolid(x, y, levelData, layer2Data, player))
-            if(!IsSolid(x + width, y + height, levelData, layer2Data, player))
-                if(!IsSolid(x + width, y, levelData, layer2Data, player))
-                    if(!IsSolid(x, y + height, levelData, layer2Data, player))
-                        if(!IsSolid(x, y + height / 2, levelData, layer2Data, player))
-                            if(!IsSolid(x + width, y + height / 2, levelData, layer2Data, player))
-                                if(!IsSolid(x, y + height / 4, levelData, layer2Data, player))
-                                    if(!IsSolid(x + width, y + height / 4, levelData, layer2Data, player))
-                                        if(!IsSolid(x, y + height * 3 / 4, levelData, layer2Data, player))
-                                            if(!IsSolid(x + width, y + height * 3 / 4, levelData, layer2Data, player))
+    private static float tempX = 0;
+    private static float tempY;
+    public static boolean CanMoveHere(float x, float y, float width, float height, int[][] layer1Data, int[][] levelData, int[][] layer3Data, Player player) {
+        if(!IsSolid(x, y, layer1Data, levelData, layer3Data, player))
+            if(!IsSolid(x + width, y + height, layer1Data, levelData, layer3Data, player))
+                if(!IsSolid(x + width, y, levelData, layer1Data, layer3Data, player))
+                    if(!IsSolid(x, y + height, levelData, layer1Data, layer3Data, player))
+                        if(!IsSolid(x, y + height / 2, layer1Data, levelData, layer3Data, player))
+                            if(!IsSolid(x + width, y + height / 2, layer1Data, levelData, layer3Data, player))
+                                if(!IsSolid(x, y + height / 4, layer1Data, levelData, layer3Data, player))
+                                    if(!IsSolid(x + width, y + height / 4, layer1Data, levelData, layer3Data, player))
+                                        if(!IsSolid(x, y + height * 3 / 4, layer1Data, levelData, layer3Data, player))
+                                            if(!IsSolid(x + width, y + height * 3 / 4, layer1Data, levelData, layer3Data, player))
                                                 return true;
         return false;
     }
 
-    private static boolean IsSolid(float x, float y, int[][] levelData, int[][] layer2Data, Player player) {
+    private static boolean IsSolid(float x, float y, int[][] layer1Data, int[][] levelData, int[][] layer3Data, Player player) {
+
         if(x < 0 || x >= Constants.mapInfo.mapWidth * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale)) return true;
         if(y < 0 || y >= Constants.mapInfo.mapHeight * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale)) return true;
 
@@ -37,32 +44,30 @@ public class Collisions {
         float yIndex = y / (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale);
 
         int value = levelData[(int)yIndex][(int)xIndex];
-        int specialsValue = layer2Data[(int)yIndex][(int)xIndex];
+        int specialsValue = layer1Data[(int)yIndex][(int)xIndex];
 
         //Key collection
         if(specialsValue == 88) {
             keyX = (int)xIndex;
             keyY = (int)yIndex;
             player.keyCollected = true;
-            layer2Data[(int)yIndex][(int)xIndex] = 0;
+            player.getGamePanel().getGame().getLevelManager().currentLevel.getLevel1Data()[keyY][keyX] = 0;
         }
 
         //Death condition
         if((value >= 143 && value <= 151) || (value >= 156 && value <= 167)) {
             if(player.keyCollected) {
                 player.keyCollected = false;
-                layer2Data[keyY][keyX] = 88;
+                player.getGamePanel().getGame().getLevelManager().currentLevel.getLevel1Data()[keyY][keyX] = 88;
             }
             player.hasDied = true;
             return true;
         }
 
         //Doors
-        if(value == 103 || value == 116) {
-            if(player.keyCollected) {
-                System.out.println("Open door");
-            }
-        }
+        if((value == 103 || value == 116) && player.keyCollected) {
+            player.getGamePanel().getGame().drawText = true;
+        } else if(!(value == 103 || value == 116)) player.getGamePanel().getGame().drawText = false;
 
         //Collidable
         if((value >= 3 && value <= 6) || (value >= 40 && value <= 45) || value == 53 || value == 55
@@ -73,17 +78,33 @@ public class Collisions {
         } else return false;
     }
 
+    public static void redrawKey(Player player) {
+        player.getGamePanel().getGame().getLevelManager().currentLevel.getLevel1Data()[keyY][keyX] = 88;
+    }
+
     public static float GetEntityXPositionByWall(Rectangle2D.Float hitbox, float xSpeed) {
         int currentTile = (int)(hitbox.x / (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale));
 
         if(xSpeed > 0) {
             int tileXPosition = currentTile * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale);
             int xOffeset = (int) ((int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale) - hitbox.width);
-            //System.out.println(hitbox.width);
             return tileXPosition + xOffeset - 1;
         } else {
             return currentTile * (int)(Constants.mapInfo.tileSize * Constants.mapInfo.gameScale);
         }
+    }
+
+    public static boolean checkIfAtDoor(GamePanel gamePanel) {
+        float x = gamePanel.getGame().getPlayer().getHitbox().x / (Constants.mapInfo.tileSize * Constants.mapInfo.gameScale);
+        float y = gamePanel.getGame().getPlayer().getHitbox().y / (Constants.mapInfo.tileSize * Constants.mapInfo.gameScale);
+        int[][] levelData = gamePanel.getGame().getLevelManager().getCurrentLevel().getLevel1Data();
+        int backgroundTile = levelData[(int)y][(int)x];
+//        System.out.println(backgroundTile);
+//        System.out.println("Checking for door");
+        if((backgroundTile == 103 || backgroundTile == 116) && gamePanel.getGame().getPlayer().keyCollected) {
+            return true;
+        }
+        else return false;
     }
 
     public static float GetEntityYPositionByGround(Rectangle2D.Float hitbox, float airSpeed) {
@@ -98,12 +119,13 @@ public class Collisions {
         }
     }
 
-    public static boolean IsEntityOnGround(Rectangle2D.Float hitbox, int[][] levelData, int[][] layer2Data, Player player) {
-        if(!IsSolid(hitbox.x, hitbox.y + hitbox.height + 1 , levelData, layer2Data, player)) {
-            if(!IsSolid(hitbox.x + hitbox.width, hitbox.y + hitbox.height + 1, levelData, layer2Data, player)) {
+    public static boolean IsEntityOnGround(Rectangle2D.Float hitbox, int[][] layer1Data, int[][] levelData, int[][] layer2Data, Player player) {
+        if(!IsSolid(hitbox.x, hitbox.y + hitbox.height + 1, layer1Data, levelData, layer2Data, player)) {
+            if(!IsSolid(hitbox.x + hitbox.width, hitbox.y + hitbox.height + 1, layer1Data, levelData, layer2Data, player)) {
                 return false;
             }
         }
         return true;
     }
 }
+

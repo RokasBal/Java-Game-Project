@@ -1,5 +1,6 @@
 package entities;
 
+import main.GamePanel;
 import main.LevelManager;
 import utilz.Constants;
 import utilz.LoadImages;
@@ -17,6 +18,11 @@ import static utilz.Constants.PlayerConstants.*;
 import static utilz.Constants.PlayerConstants.getSpriteAmount;
 import static utilz.Constants.physicsControl.playerSpeed;
 
+/**
+ * Žaidėjo klasė.
+ * @author Rokas Baliutavičius, 5 grupė
+ */
+
 public class Player extends Entity{
 
     private BufferedImage[][] animations;
@@ -26,13 +32,15 @@ public class Player extends Entity{
     private boolean inAir = false;
     public static int startX = Constants.PlayerInfo.START_X, startY = Constants.PlayerInfo.START_Y;
     private float airSpeed = 0f;
+    private GamePanel gamePanel;
     public boolean hasDied = false, keyCollected = false;
     private int animationsArraySizeX = 11, animationsArraySizeY = 8;
-    private int[][] levelData, layer2Data;
-    public Player(float x, float y, int width, int height) {
+    public int[][] layer1Data, levelData, layer3Data;
+    public Player(float x, float y, int width, int height, GamePanel gamePanel) {
         super(x, y, width, height);
+        this.gamePanel = gamePanel;
         loadAnimations();
-        initializeHitbox(x, y, 12f * Constants.mapInfo.gameScale, 28f * Constants.mapInfo.gameScale);
+        initializeHitbox(x, y, 12f * Constants.mapInfo.gameScale, 26f * Constants.mapInfo.gameScale);
     }
 
     public void update() {
@@ -43,16 +51,14 @@ public class Player extends Entity{
     }
 
     public void render(Graphics g, int levelOffsetX, int levelOffsetY) {
-        //System.out.println(hitbox.x + " " + hitbox.y);
-        g.drawImage(animations[animationIndex][playerAction], (int)(hitbox.x - 50 * Constants.mapInfo.gameScale) - levelOffsetX, (int)(hitbox.y - 50 * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.PlayerInfo.SPRITE_WIDTH * Constants.mapInfo.gameScale), (int)(Constants.PlayerInfo.SPRITE_HEIGHT * Constants.mapInfo.gameScale), null);
-        drawHitbox(g, levelOffsetX, levelOffsetY);
+        g.drawImage(animations[animationIndex][playerAction], (int)(hitbox.x - 50 * Constants.mapInfo.gameScale) - levelOffsetX, (int)(hitbox.y - 52 * Constants.mapInfo.gameScale) - levelOffsetY, (int)(Constants.PlayerInfo.SPRITE_WIDTH * Constants.mapInfo.gameScale), (int)(Constants.PlayerInfo.SPRITE_HEIGHT * Constants.mapInfo.gameScale), null);
+//        drawHitbox(g, levelOffsetX, levelOffsetY);
     }
 
     private void checkForDeath() {
         if(hasDied) {
-//            playerAction = DYING;
-            hitbox.x = LevelManager.getCurrentLevel().startX;
-            hitbox.y = LevelManager.getCurrentLevel().startY;
+            hitbox.x = gamePanel.getGame().getLevelManager().getCurrentLevel().startX;
+            hitbox.y = gamePanel.getGame().getLevelManager().getCurrentLevel().startY;
             hasDied = false;
         }
     }
@@ -100,17 +106,26 @@ public class Player extends Entity{
         if(startingAnimation != playerAction) resetAnimationTick();
     }
 
+    public GamePanel getGamePanel() {
+        return gamePanel;
+    }
+
     private void resetAnimationTick() {
         animationTick = 0;
         animationIndex = 0;
     }
 
-    public void loadLevelData(int[][] mainLayerData, int[][] layer2Data) {
-        this.levelData = mainLayerData;
-        this.layer2Data = layer2Data;
-        if(!IsEntityOnGround(hitbox, levelData, layer2Data, this)){
+    public void loadLevelData(int[][] layer1Data, int[][] layer2Data, int[][] layer3Data) {
+        this.layer1Data = layer1Data;
+        this.levelData = layer2Data;
+        this.layer3Data = layer3Data;
+        if(!IsEntityOnGround(hitbox, layer1Data, levelData, layer2Data, this)){
             inAir = true;
         }
+    }
+
+    public int[][] returnBackgroundData() {
+        return layer1Data;
     }
 
     private void updateAnimationTick() {
@@ -140,13 +155,13 @@ public class Player extends Entity{
             xSpeed += playerSpeed;
 
         if(!inAir) {
-            if(!IsEntityOnGround(hitbox, levelData, layer2Data, this)) {
+            if(!IsEntityOnGround(hitbox, layer1Data, levelData, layer3Data, this)) {
                 inAir = true;
             }
         }
 
         if(inAir) {
-            if(CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, levelData, layer2Data, this)) {
+            if(CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, gamePanel.getGame().getLevelManager().getCurrentLevel().getLevel1Data(), levelData, layer3Data, this)) {
                 hitbox.y += airSpeed;
                 airSpeed += Constants.physicsControl.gravity;
                 updateXPosition(xSpeed);
@@ -179,7 +194,7 @@ public class Player extends Entity{
     }
 
     private void updateXPosition(float xSpeed) {
-        if(CanMoveHere(hitbox.x + xSpeed, hitbox.y, (int) hitbox.width, (int) hitbox.height, levelData, layer2Data, this)) {
+        if(CanMoveHere(hitbox.x + xSpeed, hitbox.y, (int) hitbox.width, (int) hitbox.height, gamePanel.getGame().getLevelManager().getCurrentLevel().getLevel1Data(), levelData, layer3Data, this)) {
             hitbox.x += xSpeed;
         } else {
             hitbox.x = GetEntityXPositionByWall(hitbox, xSpeed);

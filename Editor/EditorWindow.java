@@ -4,6 +4,11 @@ import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 
+/**
+ * Klasė sukurianti ir nustatanti editoriaus JFrame.
+ * @author Rokas Baliutavičius, 5 grupė
+ */
+
 public class EditorWindow {
     private JFrame jframe;
 

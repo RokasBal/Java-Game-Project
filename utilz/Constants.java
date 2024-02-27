@@ -1,5 +1,10 @@
 package utilz;
 
+/**
+ * Klasė, naudojama saugoti ir nustatyti nesikeičiančias reikšmes.
+ * @author Rokas Baliutavičius, 5 grupė
+ */
+
 public class Constants {
 
     public static class Directions {
@@ -52,7 +57,7 @@ public class Constants {
 
     public static class physicsControl {
         public static final float gravity = 0.05f;
-        public static final float jumpSpeed = -3.2f;
+        public static final float jumpSpeed = -3.8f;
         public static final float fallSpeedAfterCollision = 0.5f;
         public static final float playerSpeed = 1.5f;
     }

@@ -2,15 +2,22 @@ package Inputs;
 
 import Editor.EditorPanel;
 import main.GamePanel;
+import utilz.Collisions;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import static utilz.Constants.Directions.*;
 
+/**
+ * Klasė, naudojama gauti klaviatūros įvesti žaidime.
+ * @author Rokas Baliutavičius, 5 grupė
+ */
+
 public class KeyboardInputs implements KeyListener {
 
     private GamePanel gamePanel;
+    private int index = 0;
 
     public KeyboardInputs(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -40,6 +47,13 @@ public class KeyboardInputs implements KeyListener {
                 break;
             case KeyEvent.VK_E:
                 gamePanel.openEditor();
+                break;
+            case KeyEvent.VK_F:
+                //Open door;
+                if(Collisions.checkIfAtDoor(gamePanel)) gamePanel.getGame().getLevelManager().changeLevel();
+                break;
+            case KeyEvent.VK_L:
+                gamePanel.getGame().getLevelManager().addLevel();
                 break;
         }
     }

@@ -8,10 +8,13 @@ import utilz.Constants;
 
 import java.io.*;
 
+/**
+ * Klasė, naudojama nuskaityti lygių informaciją, išsaugotą JSON formatu.
+ * @author Rokas Baliutavičius, 5 grupė
+ * @author Aurelijus Lukšas, 5 grupė
+ */
+
 public class ParseJSON {
-    public ParseJSON() {
-        //readFromJson();
-    }
 
     public static long[] readHeighAndWidth(String fileName) {
         long[] heightWidth = new long[2];
@@ -42,7 +45,6 @@ public class ParseJSON {
     }
 
     public static int[][] readFromJson(String fileName, int selectionIndex) {
-        //Lukšo darbas
 
         int[][] mapData = new int[Constants.mapInfo.mapHeight][Constants.mapInfo.mapWidth];
         InputStream is = ParseJSON.class.getResourceAsStream("/levels/" + fileName);
@@ -66,6 +68,7 @@ public class ParseJSON {
             for(int i = 0; i < Constants.mapInfo.mapHeight; i++) {
                 for(int j = 0; j < Constants.mapInfo.mapWidth; j++) {
                     mapData[i][j] = ((Long) layerData.get(index)).intValue();
+                    if(mapData[i][j] != 0)  mapData[i][j] = mapData[i][j] - 1;
                     index++;
                 }
             }

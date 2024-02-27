@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.Buffer;
 
+/**
+ * Klasė, naudojama gauti nuotrauką.
+ * @author Rokas Baliutavičius, 5 grupė
+ */
+
 public class LoadImages {
 
     public static final String TILESET_FILE = "dungeon_set_2.png";

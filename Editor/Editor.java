@@ -3,6 +3,11 @@ package Editor;
 import java.awt.*;
 import java.util.Objects;
 
+/**
+ * Editoriu sukurianti klase.
+ * @author Rokas Baliutavičius, 5 grupė
+ */
+
 public class Editor implements Runnable{
     private EditorPanel editorPanel;
     private EditorWindow editorWindow;

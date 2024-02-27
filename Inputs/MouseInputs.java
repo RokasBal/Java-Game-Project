@@ -7,6 +7,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+/**
+ * Klasė, naudojama gauti pelės įvesti editoriuje.
+ * @author Rokas Baliutavičius, 5 grupė
+ */
+
 public class MouseInputs implements MouseListener, MouseMotionListener {
 
     private GamePanel gamePanel;

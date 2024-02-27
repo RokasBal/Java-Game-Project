@@ -6,6 +6,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 
+/**
+ * Klasė, naudojama gauti klaviatūros įvesti editoriuje.
+ * @author Rokas Baliutavičius, 5 grupė
+ */
+
 public class EditorInputs implements KeyListener {
 
     private EditorPanel editorPanel;
@@ -17,7 +22,7 @@ public class EditorInputs implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         switch(e.getKeyCode()) {
-            case KeyEvent.VK_P:
+            case KeyEvent.VK_S:
                 System.out.println("Saving to JSON");
                 try {
                     editorPanel.saveToJSON();
@@ -25,8 +30,17 @@ public class EditorInputs implements KeyListener {
                     throw new RuntimeException(ex);
                 }
                 break;
-            case KeyEvent.VK_O:
+            case KeyEvent.VK_1:
+                editorPanel.selectedLayer = 0;
                 break;
+            case KeyEvent.VK_2:
+                editorPanel.selectedLayer = 1;
+                break;
+            case KeyEvent.VK_3:
+                editorPanel.selectedLayer = 2;
+                break;
+            case KeyEvent.VK_L:
+                editorPanel.loadData();
         }
     }
 
