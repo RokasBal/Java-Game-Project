@@ -14,6 +14,10 @@ public class Constants {
         public static final int DOWN = 3;
     }
 
+    /**
+     * Klasė, skirta žaidėjo informacijai
+     */
+
     public static class PlayerInfo {
         public static final int WIDTH = 20;
         public static final int HEIGHT = 38;

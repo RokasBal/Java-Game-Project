@@ -4,7 +4,7 @@ import java.awt.*;
 import java.util.Objects;
 
 /**
- * Editoriu sukurianti klase.
+ * Klasė, vykdanti editoriaus ciklą.
  * @author Rokas Baliutavičius, 5 grupė
  */
 

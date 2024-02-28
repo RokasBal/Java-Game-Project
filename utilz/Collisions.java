@@ -55,7 +55,7 @@ public class Collisions {
         }
 
         //Death condition
-        if((value >= 143 && value <= 151) || (value >= 156 && value <= 167)) {
+        if((value >= 143 && value <= 151) || (value >= 156 && value <= 167) || value == 109) {
             if(player.keyCollected) {
                 player.keyCollected = false;
                 player.getGamePanel().getGame().getLevelManager().currentLevel.getLevel1Data()[keyY][keyX] = 88;

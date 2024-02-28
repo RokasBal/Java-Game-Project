@@ -1,3 +1,10 @@
 out/
+META-INF/
+index-files/
+legal/
+JavaDoc/
 gameTest.iml
 .*/
+.html
+.js
+.css
