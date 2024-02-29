@@ -1,8 +1,8 @@
-## Java Game Project
+# Java Game Project
 
 A simple platformer game made for a school project. 
 
-# Game controls
+## Game controls
 
 * <kbd>WASD</kbd>  - player movmement
 * <kbd>SPACE</kbd> - jump
@@ -10,7 +10,7 @@ A simple platformer game made for a school project.
 * <kbd>L</kbd>     - load a saved level to queue
 * <kbd>E</kbd>     - open level editor
 
-# Editor controls
+## Editor controls
 
 * <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> - switch between layers (background, solid, foreground)
 * <kbd>S</kbd> - save level to JSON
