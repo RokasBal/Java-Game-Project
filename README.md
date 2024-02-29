@@ -2,6 +2,8 @@
 
 A simple platformer game made for a school project. 
 
+![In-game screenshot](https://github.com/RokasBal/Java-Game-Project/blob/main/res/game_screenshot.png?raw=true)
+
 ## Game controls
 
 * <kbd>WASD</kbd>  - player movmement
