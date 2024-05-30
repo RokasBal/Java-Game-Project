@@ -1,8 +1,8 @@
 # Java Game Project
 
-A simple platformer game made for a school project. 
-
 ![In-game screenshot](https://github.com/RokasBal/Java-Game-Project/blob/main/res/game_screenshot.png?raw=true)
+
+A simple platformer game written in Java.
 
 ## Game controls
 
